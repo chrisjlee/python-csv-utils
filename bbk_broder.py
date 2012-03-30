@@ -6,13 +6,8 @@ cr = csv.reader(open('test.csv', 'rb'))
 header = cr.next()
 co = csv.writer(open('test2.csv','wb'))
 for row in cr:
-    if row[0][0] == 'sku':
-        row = ''
     if row == row[0]:
         pass
-    print row
-    
-def 
     try:
         index = row[2].index(' - ')
         if index > 0:
@@ -22,3 +17,4 @@ def
     except:
         pass
     co.writerow(row)
+    print row
