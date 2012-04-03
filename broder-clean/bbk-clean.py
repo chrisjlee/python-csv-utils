@@ -9,14 +9,15 @@ Clean the broder files and remove nasty characters
 
 with open("output.csv", "wt") as out:
     for l in open("update.csv", 'r'):
-        l = l.replace('^', ',', -1)
-        print l
+        l = l.replace('^', ',')
+        # prices ([0-9]{2})(\.)([0-9]{2}) match = re.sub('([0-9]{2})(\.)([0-9]{2})','\0',l)
+        #print l
         out.write(l)
-#def parse(fn, op):
-#    cr = csv.reader(open(fn, 'rb'))
-#    header = cr.next()
-#    co = csv.writer(open(op,'wb'))
-#    return cr, co
+def parse(fn, op):
+    cr = csv.reader(open(fn, 'rb'))
+    header = cr.next()
+    co = csv.writer(open(op,'wb'))
+    return cr, co
 #"""
 #  Replace seperated values
 #      @param row: csv row
@@ -25,13 +26,18 @@ with open("output.csv", "wt") as out:
 #def seperate_values(row,seperator):
 #    return row.replace(seperator,',')
 ## Return parsed values
-###cr = parse('update.csv','output.csv')
-#print co
-#header = cr.next()
-#
-#for i, row in enumerate(cr):
-#    print row
-#    seperate_values(row,'^')
+cr, co = parse('output.csv','update2.csv')
+header = cr.next()
+for i, row in enumerate(cr):
+    """
+      Change the prices and remove the decimal
+    """
+    prices = row[18:23] #define the ranges 
+    for id, price in enumerate(prices):
+        prices[id] = price.replace('.','')
+        row[18+id] = prices[id]
+    co.writerow(row)
+    #seperate_values(row,'^')
     
 #def main():
 #    return null
