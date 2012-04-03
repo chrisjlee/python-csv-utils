@@ -1,45 +1,48 @@
 #!/usr/bin/env python
 import csv
 import re
-import os
+#import sys
 
-"""
-Clean the broder files and remove nasty characters
-"""
-
+#"""
+#Clean the broder files and remove nasty characters
+#---------------------------------------------------
+#"""
 with open("output.csv", "wt") as out:
     for l in open("update.csv", 'r'):
         l = l.replace('^', ',')
-        # prices ([0-9]{2})(\.)([0-9]{2}) match = re.sub('([0-9]{2})(\.)([0-9]{2})','\0',l)
-        #print l
         out.write(l)
+
 def parse(fn, op):
     cr = csv.reader(open(fn, 'rb'))
     header = cr.next()
     co = csv.writer(open(op,'wb'))
     return cr, co
-#"""
-#  Replace seperated values
-#      @param row: csv row
-#      @param seperator: replaced text value to convert seperator 
-#"""
-#def seperate_values(row,seperator):
-#    return row.replace(seperator,',')
-## Return parsed values
+# 
+#def parse_images(images):
+#    #print images
+#    return row
 cr, co = parse('output.csv','update2.csv')
 header = cr.next()
 for i, row in enumerate(cr):
     """
-      Change the prices and remove the decimal
+    Change the prices and remove the decimal
+    ------------------------------------------------------
     """
-    prices = row[18:23] #define the ranges 
-    for id, price in enumerate(prices):
-        prices[id] = price.replace('.','')
-        row[18+id] = prices[id]
+    prices = row[18:23] # define the ranges
+    prices = [price.replace('.', '') for price in prices]
+    prices = [int(price) for price in prices]
+    prices = [price * 10 if price < 1000 else price for price in prices]
+    newrow = row[:18] + prices + row[23:]
+    row = newrow
+    print row
+    # Images
+    images = 'http://www.broderbros.com/images/bro/prodDetail/%s' % row[-3], 'http://www.broderbros.com/images/bro/prodDetail/%s' % row[-4]
+    row[-3], row[-4] = images[0], images[1]
+    # Description
+    desc = row[-2]
+    #print desc.replace('\xef\xbf\xbds','')
     co.writerow(row)
-    #seperate_values(row,'^')
-    
 #def main():
-#    return null
+#    
 #if __name__ == '__main__':
 #    main()
