@@ -2,11 +2,9 @@
 import csv
 import os
 import re
-import time
-#import sys
+import sys
 
 tf = ('temp')
-print time.time()
 
 """-------------------------------------------------------------------------
 Clean the broder's csv file and remove nasty characters 
@@ -32,7 +30,7 @@ def parse(fn, op):
     cr = csv.reader(open(fn, 'rb'))
     header = cr.next()
     co = csv.writer(open(op,'wb'))
-    return cr, co, header
+    return cr, co
 # 
 #def parse_images(images):
 #    #print images
@@ -56,10 +54,11 @@ for i, row in enumerate(cr):
     # Images
     baseurl = 'http://www.broderbros.com/images/bro/prodDetail/'
     row[-3], row[-4] = baseurl + row[-3], baseurl + row[-4]
+#    if row[1] == "NEW":
+#        row =  row.append('new')
+#        print row
     # Description
-    desc = row[-2]
-    #print desc.replace('\xef\xbf\xbds','')
-    #print row
+    desc = row[-2] 
     co.writerow(row)
 #def main():
 #    
