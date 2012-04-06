@@ -6,6 +6,7 @@ import sys
 
 tf = ('temp')
 
+
 """-------------------------------------------------------------------------
 Clean the broder's csv file and remove nasty characters 
     and replaces it with commas
