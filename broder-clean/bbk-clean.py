@@ -3,9 +3,7 @@ import csv
 import os
 import re
 import sys
-
-tf = ('temp')
-
+from itertools import izip
 
 """-------------------------------------------------------------------------
 Clean the broder's csv file and remove nasty characters 
@@ -32,13 +30,18 @@ def parse(fn, op):
     header = cr.next()
     co = csv.writer(open(op,'wb'))
     return cr, co
-# 
-#def parse_images(images):
-#    #print images
-#    return row
+def merge_price_qty(prices):
+    qty = ['0|1','2|12','13|-1']
+    tmp = ["%s|%s" % (a,b) for a,b in zip(prices,qty)]
+    return tmp
 cr, co = parse('output.csv','update2.csv')
 header = cr.next()
+"""
+Iterate through the csv
+------------------------------------------------------
+"""
 for i, row in enumerate(cr):
+    # Don't process the header duh
     if i == 0:
         header = row
         pass
@@ -50,18 +53,28 @@ for i, row in enumerate(cr):
     prices = [price.replace('.', '') for price in prices]
     prices = [int(price) for price in prices]
     prices = [price * 10 if price < 1000 else price for price in prices]
-    newrow = row[:18] + prices + row[23:]
+    """
+    Merge Prices into price|qty|qty2;price|qty|qty2;price|qty|qty2 format
+    ------------------------------------------------------
+    """
+    prices = merge_price_qty(prices)
+    tmp = ';'.join(prices)
+    newrow = row[:18] + [tmp] + row[23:]
     row = newrow
-    # Images
+    """
+    Add base url for broder
+    ------------------------------------------------------
+    """
     baseurl = 'http://www.broderbros.com/images/bro/prodDetail/'
     row[-3], row[-4] = baseurl + row[-3], baseurl + row[-4]
 #    if row[1] == "NEW":
 #        row =  row.append('new')
 #        print row
     # Description
-    desc = row[-2] 
+    desc = row[-2]
+if __name__ == '__main__':
+    """
+    Write row to file
+    ------------------------------------------------------
+    """
     co.writerow(row)
-#def main():
-#    
-#if __name__ == '__main__':
-#    main()
