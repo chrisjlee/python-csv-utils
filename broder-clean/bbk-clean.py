@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import csv, re, sys, argparse, tempfile, shutil, os
+import csv, re, sys, argparse, tempfile, shutil
 import tempfile, shutil, os
 """
 Reads through a highly formatted csv file and reorganizes the
@@ -33,7 +33,7 @@ def parse(fn, op):
         the csv writer object with write permissions
     -------------------------------------------------------------------------"""
     cr = csv.reader(open(fn, 'rb'))
-    # header = cr.next()
+    # header = cr.next() 
     co = csv.writer(open(op,'wb'))
     return cr, co
 def merge_price_qty(prices):
@@ -51,18 +51,28 @@ def create_temporary_copy(path):
     shutil.copy2(path, temp_path)
     return temp_path
 def parse_arguments():
+    """
+    Function manages arguments
+    """
     parser = argparse.ArgumentParser(prog='Price Formatter ', description=__doc__, epilog='Author: Chris Lee (chris@globerunnerseo.com)')
     parser.add_argument('-i', '--input', help='Input file', nargs='?', type=argparse.FileType('r'), default=sys.stdin, required=True)
     parser.add_argument('-o', '--output', help='Output file', nargs='?', type=argparse.FileType('w'), default=sys.stdout, required=True)
     args = parser.parse_args(sys.argv[1:])
     argsdict = vars(args)
     return argsdict['input'], argsdict['output'] 
-
+"""
+    main function
+-------------------------------------------------------------------------"""
 if __name__ == '__main__':
+    # Grab the input / output path
     input, output = parse_arguments()
+    # Create storage for temporary list for lines
     lines = []
+    # create tmp list variable 
     tmp = []
+    # define what the baseurl is
     baseurl = 'http://www.broderbros.com/images/bro/prodDetail/'
+    
     """
     Clean the broder's csv file and remove nasty characters 
     and replaces it with commas
