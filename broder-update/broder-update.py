@@ -13,8 +13,8 @@ def parse_arguments():
     args = parser.parse_args(sys.argv[1:])
     argsdict = vars(args)
     return argsdict['input'], argsdict['update'], argsdict['output']
-def validate_header():
-    print 'yay'
+#def validate_header():
+#    print 'yay'
 def open_csv(fn, op):
     """-------------------------------------------------------------------------
     Utility function that takes in a file
@@ -28,18 +28,15 @@ def open_csv(fn, op):
     @return co: 
         the csv writer object with write permissions
     -------------------------------------------------------------------------"""
-    cr = csv.reader(open(fn, 'rb'))
+    cr = csv.reader(fn)
     # header = cr.next()
-    co = csv.writer(open(op,'wb'))
+    co = csv.writer(op)
     return cr, co
 """
     main function
 -------------------------------------------------------------------------"""
 if __name__ == '__main__':
     # Grab the input / output path
-    input, output = parse_arguments()
-    cr, co = open_csv(input)
-    with cr as f:
-        f.readline() # ignore first line (header)
-        mydict = dict(csv.reader(f, delimiter=','))
-    print mydict
+    input, update, output = parse_arguments()
+    for i, line in  enumerate(input.readlines()[1:]):
+        print line

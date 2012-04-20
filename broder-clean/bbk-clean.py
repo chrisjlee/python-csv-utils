@@ -59,6 +59,7 @@ def parse_arguments():
     parser.add_argument('-o', '--output', help='Output file', nargs='?', type=argparse.FileType('w'), default=sys.stdout, required=True)
     args = parser.parse_args(sys.argv[1:])
     argsdict = vars(args)
+    print argsdict
     return argsdict['input'], argsdict['output'] 
 """
     main function
@@ -72,24 +73,24 @@ if __name__ == '__main__':
     tmp = []
     # define what the baseurl is
     baseurl = 'http://www.broderbros.com/images/bro/prodDetail/'
-    parse_arguments()
+    fi, fo = parse_arguments()
     """
     Clean the broder's csv file and remove nasty characters 
     and replaces it with commas
     -------------------------------------------------------------------------"""
-    o = open("output.csv", "wt")
-    with o as out:
-        for l in open("update.csv", 'r'):
-            l = l.replace('^', ',')
-            out.write(l)
-        cr, co = parse('output.csv','update2.csv')
+    for l in fi:
+        l = l.replace('^', ',')
+        fo.write(l)
+    print 
+    #cr, co = parse('output.csv','update2.csv')
+
 #    o = open("output.csv", "wt")
 #    with o as out:
 #        for l in open("update.csv", 'r'):
 #            l = l.replace('^', ',')
 #            out.write(l)
 #        cr, co = parse('output.csv','update2.csv')
-    o.close()
+    #o.close()
     # print h[0]
     # l.append(tmp)
     """
@@ -128,5 +129,4 @@ if __name__ == '__main__':
         """
         lines.append(row)
     for line in lines:
-        print line
         co.writerow(line)
