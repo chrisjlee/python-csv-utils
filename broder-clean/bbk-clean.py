@@ -72,7 +72,7 @@ if __name__ == '__main__':
     tmp = []
     # define what the baseurl is
     baseurl = 'http://www.broderbros.com/images/bro/prodDetail/'
-    
+    parse_arguments()
     """
     Clean the broder's csv file and remove nasty characters 
     and replaces it with commas
@@ -83,6 +83,12 @@ if __name__ == '__main__':
             l = l.replace('^', ',')
             out.write(l)
         cr, co = parse('output.csv','update2.csv')
+#    o = open("output.csv", "wt")
+#    with o as out:
+#        for l in open("update.csv", 'r'):
+#            l = l.replace('^', ',')
+#            out.write(l)
+#        cr, co = parse('output.csv','update2.csv')
     o.close()
     # print h[0]
     # l.append(tmp)
@@ -92,7 +98,8 @@ if __name__ == '__main__':
     for i, row in enumerate(cr):
         # Don't process the header
         if row[0] == 'Category Page Number':
-            newrow = row[:18] + ['Price'] + row[23:]
+            # new row = everything up to price + price table + everything else afterwards 
+            newrow = row[:18] + ['Price'] + row[22:]
             lines.append(newrow)
             continue
         """
@@ -102,12 +109,13 @@ if __name__ == '__main__':
         prices = [price.replace('.', '') for price in prices]
         prices = [int(price) for price in prices]
         prices = [price * 10 if price < 1000 else price for price in prices]
+        retail = prices[4]
         """
         Merge Prices into price|qty|qty2;price|qty|qty2;price|qty|qty2 format
         --------------------------------------------------------------"""
         prices = merge_price_qty(prices)
         tmp = ';'.join(prices)
-        newrow = row[:18] + [tmp] + row[23:]
+        newrow = row[:18] + [tmp] + [retail] + row[23:] 
         row = newrow
         """
         Add base url for broder
@@ -120,4 +128,5 @@ if __name__ == '__main__':
         """
         lines.append(row)
     for line in lines:
+        print line
         co.writerow(line)
