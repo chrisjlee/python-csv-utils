@@ -2,6 +2,7 @@
 import csv, argparse, sys
 header = ["SKU","Status","Title","Price","Weight","Company","Style Code","Features","Retail Price","Size","Hex Color","Color","Mill Name","Dimensions","Imprint Area","Item Number","Image","Category"]
 
+
 def parse_arguments():
     """
     Function manages arguments
