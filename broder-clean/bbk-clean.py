@@ -59,21 +59,20 @@ def parse_arguments():
     parser.add_argument('-o', '--output', help='Output file', nargs='?', type=argparse.FileType('w'), default=sys.stdout, required=True)
     args = parser.parse_args(sys.argv[1:])
     argsdict = vars(args)
-    print argsdict
-    return argsdict['input'], argsdict['output'] 
+    return argsdict['input'], argsdict['output']
 """
     main function
 -------------------------------------------------------------------------"""
 if __name__ == '__main__':
     # Grab the input / output path
-    input, output = parse_arguments()
+    fi, fo = parse_arguments()
     # Create storage for temporary list for lines
     lines = []
     # create tmp list variable 
     tmp = []
     # define what the baseurl is
     baseurl = 'http://www.broderbros.com/images/bro/prodDetail/'
-    fi, fo = parse_arguments()
+    
     """
     Clean the broder's csv file and remove nasty characters 
     and replaces it with commas
@@ -81,52 +80,51 @@ if __name__ == '__main__':
     for l in fi:
         l = l.replace('^', ',')
         fo.write(l)
-    print 
-    #cr, co = parse('output.csv','update2.csv')
+    # cr, co = parse('output.csv','update2.csv')
 
-#    o = open("output.csv", "wt")
-#    with o as out:
-#        for l in open("update.csv", 'r'):
-#            l = l.replace('^', ',')
-#            out.write(l)
-#        cr, co = parse('output.csv','update2.csv')
-    #o.close()
-    # print h[0]
-    # l.append(tmp)
+    o = open("output.csv", "wt")
+    with o as out:
+        for l in open("update.csv", 'r'):
+            l = l.replace('^', ',')
+            out.write(l)
+        cr, co = parse('output.csv','update2.csv')
+    o.close()
+    print h[0]
+    l.append(tmp)
     """
     Iterate through the csv
     --------------------------------------------------------------"""
-    for i, row in enumerate(cr):
-        # Don't process the header
-        if row[0] == 'Category Page Number':
-            # new row = everything up to price + price table + everything else afterwards 
-            newrow = row[:18] + ['Price'] + row[22:]
-            lines.append(newrow)
-            continue
-        """
-        Change the prices and remove the decimal
-        --------------------------------------------------------------"""
-        prices = row[18:23] # define the price cell ranges
-        prices = [price.replace('.', '') for price in prices]
-        prices = [int(price) for price in prices]
-        prices = [price * 10 if price < 1000 else price for price in prices]
-        retail = prices[4]
-        """
-        Merge Prices into price|qty|qty2;price|qty|qty2;price|qty|qty2 format
-        --------------------------------------------------------------"""
-        prices = merge_price_qty(prices)
-        tmp = ';'.join(prices)
-        newrow = row[:18] + [tmp] + [retail] + row[23:] 
-        row = newrow
-        """
-        Add base url for broder
-        --------------------------------------------------------------"""
-        row[-3], row[-4] = baseurl + row[-3], baseurl + row[-4]
-        desc = row[-2]
-        """
-        Write row to file
-        ------------------------------------------------------
-        """
-        lines.append(row)
-    for line in lines:
-        co.writerow(line)
+#    for i, row in enumerate(cr):
+#        # Don't process the header
+#        if row[0] == 'Category Page Number':
+#            # new row = everything up to price + price table + everything else afterwards 
+#            newrow = row[:18] + ['Price'] + row[22:]
+#            lines.append(newrow)
+#            continue
+#        """
+#        Change the prices and remove the decimal
+#        --------------------------------------------------------------"""
+#        prices = row[18:23] # define the price cell ranges
+#        prices = [price.replace('.', '') for price in prices]
+#        prices = [int(price) for price in prices]
+#        prices = [price * 10 if price < 1000 else price for price in prices]
+#        retail = prices[4]
+#        """
+#        Merge Prices into price|qty|qty2;price|qty|qty2;price|qty|qty2 format
+#        --------------------------------------------------------------"""
+#        prices = merge_price_qty(prices)
+#        tmp = ';'.join(prices)
+#        newrow = row[:18] + [tmp] + [retail] + row[23:] 
+#        row = newrow
+#        """
+#        Add base url for broder
+#        --------------------------------------------------------------"""
+#        row[-3], row[-4] = baseurl + row[-3], baseurl + row[-4]
+#        desc = row[-2]
+#        """
+#        Write row to file
+#        ------------------------------------------------------
+#        """
+#        lines.append(row)
+#    for line in lines:
+#        co.writerow(line)
