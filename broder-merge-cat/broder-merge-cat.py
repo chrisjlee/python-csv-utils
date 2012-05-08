@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-import csv, sys
+import csv
+import sys
 
 def opencsv(fn, op):
     """-------------------------------------------------------------------------

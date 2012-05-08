@@ -1,7 +1,14 @@
 #!/usr/bin/env python
-import csv, re, sys, argparse, tempfile, shutil
-import tempfile, shutil, os
+import csv, re, sys, argparse 
+import tempfile 
+import shutil
+import os
+import random
+
 """
+Example usage
+    ./bbk-clean.py -i Broder-AllDBInfoBRO.csv -o output.csv
+
 Reads through a highly formatted csv file and reorganizes the
 pricing. Written with BBK's csv format in mind.
 
@@ -33,7 +40,7 @@ def parse(fn, op):
         the csv writer object with write permissions
     -------------------------------------------------------------------------"""
     cr = csv.reader(open(fn, 'rb'))
-    # header = cr.next() 
+    # header = cr.next()
     co = csv.writer(open(op,'wb'))
     return cr, co
 def merge_price_qty(prices):
@@ -47,7 +54,8 @@ def merge_price_qty(prices):
     return tmp
 def create_temporary_copy(path):
     temp_dir = tempfile.gettempdir()
-    temp_path = os.path.join(temp_dir, 'temp_file_name')
+    tmp_path = 'tmp_' + str(random.randint(1000,9000)) + '.csv' 
+    temp_path = os.path.join(temp_dir, tmp_path)
     shutil.copy2(path, temp_path)
     return temp_path
 def parse_arguments():
@@ -66,6 +74,7 @@ def parse_arguments():
 if __name__ == '__main__':
     # Grab the input / output path
     fi, fo = parse_arguments()
+    tp = create_temporary_copy(fi.name)
     # Create storage for temporary list for lines
     lines = []
     # create tmp list variable 
@@ -77,54 +86,50 @@ if __name__ == '__main__':
     Clean the broder's csv file and remove nasty characters 
     and replaces it with commas
     -------------------------------------------------------------------------"""
-    for l in fi:
+    o = open(tp, "r+")
+    for l in o.readlines():
         l = l.replace('^', ',')
-        fo.write(l)
-    # cr, co = parse('output.csv','update2.csv')
-
-    o = open("output.csv", "wt")
-    with o as out:
-        for l in open("update.csv", 'r'):
-            l = l.replace('^', ',')
-            out.write(l)
-        cr, co = parse('output.csv','update2.csv')
-    o.close()
-    print h[0]
-    l.append(tmp)
+        o.write(l)
+    print o
+    # Parse function takes in the filename and the temporary path
+    # It returns the csv write object and the csv write output
+    co = csv.writer(fo, 'rw')
+    # Remove our temporary file
+    # os.remove(tp)
     """
     Iterate through the csv
     --------------------------------------------------------------"""
-#    for i, row in enumerate(cr):
-#        # Don't process the header
-#        if row[0] == 'Category Page Number':
-#            # new row = everything up to price + price table + everything else afterwards 
-#            newrow = row[:18] + ['Price'] + row[22:]
-#            lines.append(newrow)
-#            continue
-#        """
-#        Change the prices and remove the decimal
-#        --------------------------------------------------------------"""
-#        prices = row[18:23] # define the price cell ranges
-#        prices = [price.replace('.', '') for price in prices]
-#        prices = [int(price) for price in prices]
-#        prices = [price * 10 if price < 1000 else price for price in prices]
-#        retail = prices[4]
-#        """
-#        Merge Prices into price|qty|qty2;price|qty|qty2;price|qty|qty2 format
-#        --------------------------------------------------------------"""
-#        prices = merge_price_qty(prices)
-#        tmp = ';'.join(prices)
-#        newrow = row[:18] + [tmp] + [retail] + row[23:] 
-#        row = newrow
-#        """
-#        Add base url for broder
-#        --------------------------------------------------------------"""
-#        row[-3], row[-4] = baseurl + row[-3], baseurl + row[-4]
-#        desc = row[-2]
-#        """
-#        Write row to file
-#        ------------------------------------------------------
-#        """
-#        lines.append(row)
-#    for line in lines:
-#        co.writerow(line)
+    for i, row in enumerate(csv.reader(o)):
+        # Don't process the header
+        if row[0] == 'Category Page Number':
+            # new row = everything up to price + price table + everything else afterwards 
+            newrow = row[:18] + ['Price'] + row[22:]
+            lines.append(newrow)
+            continue
+        """
+        Change the prices and remove the decimal
+        --------------------------------------------------------------"""
+        prices = row[18:23] # define the price cell ranges Price range should include retail price
+        prices = [price.replace('.', '') for price in prices]
+        prices = [int(price) for price in prices]
+        prices = [price * 10 if price < 1000 else price for price in prices]
+        retail = prices[4]
+        """
+        Merge Prices into price|qty|qty2;price|qty|qty2;price|qty|qty2 format
+        --------------------------------------------------------------"""
+        prices = merge_price_qty(prices)
+        tmp = ';'.join(prices)
+        newrow = row[:18] + [tmp] + [retail] + row[23:] 
+        row = newrow
+        """
+        Add base url for broder
+        --------------------------------------------------------------"""
+        row[-3], row[-4] = baseurl + row[-3], baseurl + row[-4]
+        desc = row[-2]
+        # aggregate and write rows to `lines` variable buffer
+        lines.append(row)
+        print co
+    for line in lines:
+        co.writerow(line)
+    #shutil.copy(tp, fo.name)
+    #os.remove(tp)
