@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-import csv, re, sys, argparse 
-import tempfile 
+import csv
+import argparse
+import tempfile
 import shutil
+import sys
 import os
 import random
 
@@ -81,7 +83,6 @@ if __name__ == '__main__':
     tmp = []
     # define what the baseurl is
     baseurl = 'http://www.broderbros.com/images/bro/prodDetail/'
-    
     """
     Clean the broder's csv file and remove nasty characters 
     and replaces it with commas
@@ -90,16 +91,14 @@ if __name__ == '__main__':
     for l in o.readlines():
         l = l.replace('^', ',')
         o.write(l)
-    print o
     # Parse function takes in the filename and the temporary path
     # It returns the csv write object and the csv write output
-    co = csv.writer(fo, 'rw')
-    # Remove our temporary file
-    # os.remove(tp)
+    cr, co = parse(fo.name, o.name)
     """
     Iterate through the csv
     --------------------------------------------------------------"""
-    for i, row in enumerate(csv.reader(o)):
+    for i, row in enumerate(cr):
+        print i
         # Don't process the header
         if row[0] == 'Category Page Number':
             # new row = everything up to price + price table + everything else afterwards 
@@ -128,8 +127,7 @@ if __name__ == '__main__':
         desc = row[-2]
         # aggregate and write rows to `lines` variable buffer
         lines.append(row)
-        print co
     for line in lines:
         co.writerow(line)
-    #shutil.copy(tp, fo.name)
-    #os.remove(tp)
+    shutil.copy2(tp, fo.name)
+    os.remove(tp)
