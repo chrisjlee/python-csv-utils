@@ -8,30 +8,22 @@ import os
 import random
 
 """
-Example usage
-    ./bbk-clean.py -i Broder-AllDBInfoBRO.csv -o output.csv
+Example usage: ./bbk-clean.py -i Broder-AllDBInfoBRO.csv -o output.csv
+
+-i    --input  Takes in a file
+-o    --output File that it will output to
 
 Reads through a highly formatted csv file and reorganizes the
 pricing. Written with BBK's csv format in mind.
 
 Broder Input CSV Format:
-    ['Category Page Number', 'NEW', 'SKU', 'Style', 'Short Description', 'Color Group', 'Color Code', 'Color', 'Hex Code', 
-    'Size Group', 'Size Code', 'Size', 'Case Qty', 'Weight', 'Mill #', 'Mill Name', 'Category', 'Subcategory', 'P1 (Piece)', 'P2 (Dozen)', 
-    'P4 (Case)', 'P7 (Preferred)', 'Retail Price', 'Thumbnail Name', 'Normal Image Name', 'Full Feature Description', 'Brand Page Number']
+['Category Page Number', 'NEW', 'SKU', 'Style', 'Short Description', 'Color Group', 'Color Code', 'Color', 'Hex Code', 
+'Size Group', 'Size Code', 'Size', 'Case Qty', 'Weight', 'Mill #', 'Mill Name', 'Category', 'Subcategory', 'P1 (Piece)', 'P2 (Dozen)', 
+'P4 (Case)', 'P7 (Preferred)', 'Retail Price', 'Thumbnail Name', 'Normal Image Name', 'Full Feature Description', 'Brand Page Number']
 """
-
-def __var():
-    """-------------------------------------------------------------------------
-        static __var()
-        provides a configuration variable to instantiate configuration variables
-    -------------------------------------------------------------------------"""
-    h, l = []
-    baseurl = ''
-    return h,l,baseurl
 def parse(fn, op):
     """-------------------------------------------------------------------------
     Utility function that takes in a file
-    
     @param fn: 
         a string, takes in a path for the file being opened
     @param op: 
@@ -49,6 +41,9 @@ def merge_price_qty(prices):
     """-------------------------------------------------------------------------
     Merge Price and quantity into table list formats
         `price|qty|qty2;price|qty|qty2;price|qty|qty2`
+        @param prices:
+        takes in a list of prices
+        @returns tmp, a list of prices
     -------------------------------------------------------------------------"""
     # set quantity
     qty = ['0|1','2|12','13|-1']
@@ -60,13 +55,17 @@ def create_temporary_copy(path):
     temp_path = os.path.join(temp_dir, tmp_path)
     shutil.copy2(path, temp_path)
     return temp_path
+#def rm_temporary_copy(path):
+#    shutil.copy2()
+#    os.remove(path)
+#    return copytopath
 def parse_arguments():
     """
     Function manages arguments
     """
     parser = argparse.ArgumentParser(prog='Price Formatter ', description=__doc__, epilog='Author: Chris Lee (chris@globerunnerseo.com)')
     parser.add_argument('-i', '--input', help='Input file', nargs='?', type=argparse.FileType('r'), default=sys.stdin, required=True)
-    parser.add_argument('-o', '--output', help='Output file', nargs='?', type=argparse.FileType('w'), default=sys.stdout, required=True)
+    parser.add_argument('-o', '--output', help='Output file', nargs='?', type=argparse.FileType('w'), default=sys.stdout, required=False)
     args = parser.parse_args(sys.argv[1:])
     argsdict = vars(args)
     return argsdict['input'], argsdict['output']
@@ -76,29 +75,22 @@ def parse_arguments():
 if __name__ == '__main__':
     # Grab the input / output path
     fi, fo = parse_arguments()
-    tp = create_temporary_copy(fi.name)
+    # tp = create_temporary_copy(fi.name)
     # Create storage for temporary list for lines
     lines = []
     # create tmp list variable 
     tmp = []
     # define what the baseurl is
     baseurl = 'http://www.broderbros.com/images/bro/prodDetail/'
-    """
-    Clean the broder's csv file and remove nasty characters 
-    and replaces it with commas
-    -------------------------------------------------------------------------"""
-    o = open(tp, "r+")
-    for l in o.readlines():
-        l = l.replace('^', ',')
-        o.write(l)
+    cr = csv.reader(fi, delimiter='^')
+    co = csv.writer(fo, delimiter=',')
     # Parse function takes in the filename and the temporary path
     # It returns the csv write object and the csv write output
-    cr, co = parse(fo.name, o.name)
+    # cr, co = parse(fi.name, fo.name)
     """
     Iterate through the csv
     --------------------------------------------------------------"""
     for i, row in enumerate(cr):
-        print i
         # Don't process the header
         if row[0] == 'Category Page Number':
             # new row = everything up to price + price table + everything else afterwards 
@@ -115,7 +107,7 @@ if __name__ == '__main__':
         retail = prices[4]
         """
         Merge Prices into price|qty|qty2;price|qty|qty2;price|qty|qty2 format
-        --------------------------------------------------------------"""
+        ---------------------------------------------------------------"""
         prices = merge_price_qty(prices)
         tmp = ';'.join(prices)
         newrow = row[:18] + [tmp] + [retail] + row[23:] 
@@ -129,5 +121,3 @@ if __name__ == '__main__':
         lines.append(row)
     for line in lines:
         co.writerow(line)
-    shutil.copy2(tp, fo.name)
-    os.remove(tp)
