@@ -21,22 +21,6 @@ Broder Input CSV Format:
 'Size Group', 'Size Code', 'Size', 'Case Qty', 'Weight', 'Mill #', 'Mill Name', 'Category', 'Subcategory', 'P1 (Piece)', 'P2 (Dozen)', 
 'P4 (Case)', 'P7 (Preferred)', 'Retail Price', 'Thumbnail Name', 'Normal Image Name', 'Full Feature Description', 'Brand Page Number']
 """
-def parse(fn, op):
-    """-------------------------------------------------------------------------
-    Utility function that takes in a file
-    @param fn: 
-        a string, takes in a path for the file being opened
-    @param op: 
-        a string, takes in a path for the file being written to 
-    @return cr: 
-        the csv reader object with read permissions
-    @return co: 
-        the csv writer object with write permissions
-    -------------------------------------------------------------------------"""
-    cr = csv.reader(open(fn, 'rb'))
-    # header = cr.next()
-    co = csv.writer(open(op,'wb'))
-    return cr, co
 def merge_price_qty(prices):
     """-------------------------------------------------------------------------
     Merge Price and quantity into table list formats
@@ -49,16 +33,6 @@ def merge_price_qty(prices):
     qty = ['0|1','2|12','13|-1']
     tmp = ["%s|%s" % (a,b) for a,b in zip(prices,qty)]
     return tmp
-def create_temporary_copy(path):
-    temp_dir = tempfile.gettempdir()
-    tmp_path = 'tmp_' + str(random.randint(1000,9000)) + '.csv' 
-    temp_path = os.path.join(temp_dir, tmp_path)
-    shutil.copy2(path, temp_path)
-    return temp_path
-#def rm_temporary_copy(path):
-#    shutil.copy2()
-#    os.remove(path)
-#    return copytopath
 def parse_arguments():
     """
     Function manages arguments
@@ -84,9 +58,6 @@ if __name__ == '__main__':
     baseurl = 'http://www.broderbros.com/images/bro/prodDetail/'
     cr = csv.reader(fi, delimiter='^')
     co = csv.writer(fo, delimiter=',')
-    # Parse function takes in the filename and the temporary path
-    # It returns the csv write object and the csv write output
-    # cr, co = parse(fi.name, fo.name)
     """
     Iterate through the csv
     --------------------------------------------------------------"""
