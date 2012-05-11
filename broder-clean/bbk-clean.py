@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 import csv
 import argparse
-import tempfile
-import shutil
 import sys
 import os
-import random
 
 """
 Example usage: ./bbk-clean.py -i Broder-AllDBInfoBRO.csv -o output.csv
@@ -52,7 +49,7 @@ if __name__ == '__main__':
     # tp = create_temporary_copy(fi.name)
     # Create storage for temporary list for lines
     lines = []
-    # create tmp list variable 
+    # create tmp list variable
     tmp = []
     # define what the baseurl is
     baseurl = 'http://www.broderbros.com/images/bro/prodDetail/'
