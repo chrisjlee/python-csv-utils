@@ -1,16 +1,19 @@
 #!/usr/bin/env python
-# This snippet demonstrates how to read a CSV file into a dictionary of
-# dictionaries in order to be able to query it easily.
-# The full documentation for the csv module is available here:
-# http://docs.python.org/library/csv.html
-#
-# First things first, we need to import the csv module
-# Also import sys to get argv[0], which holds the name of the script
-#
 import csv
 import sys
 import itertools
 import argparse
+
+"""
+Project Overview:
+- Script merges two files
+-- `broder-entities` file contains the current data
+-- `update.csv` contains new 2012 pricing
+- Lookup sku in update if it doesn't exist in broder-entities.csv add a category "New", append to end
+- Otherwise merge common fields: price, retail price, etc
+
+"""
+
 
 #
 # Usage Example: ./broder-update.py -u  update.csv -i broder-entities.csv -o output.csv
@@ -30,17 +33,13 @@ def parse_arguments():
     argsdict = vars(args)
     # Return each argument 
     return argsdict['input'], argsdict['update'], argsdict['output']
-#def print_header(dh,Dy):
-#    for i,z in (zip (dh,Dy)):
-#        print 'input: %s \t update: %s' % (i,z)
 def csv_to_dict(file):
-    """ take the file (csv reader) """
+    """ take the file (csv reader) and return dict object """
     return csv.DictReader(file, dialect='excel', delimiter=',')
 """ main function
 -------------------------------------------------------------------------"""
 if __name__ == '__main__':
     import doctest
-    
     # Create a list for matching header columns
     mc = [] 
     # Grab the input / output path
@@ -49,18 +48,25 @@ if __name__ == '__main__':
     d = csv_to_dict(input)
     # create a dict from an  update file
     u = csv_to_dict(update)
-    #d = csv.DictReader(input, dialect='excel', delimiter=',') #csv_to_dict(input)
-    #u = csv.DictReader(update, dialect='excel', delimiter=',') # csv_to_dict(update)
+    # find the headings for each dictionary object
     dh = [f for f in d.fieldnames]
     uh = [f for f in u.fieldnames]
-    """ """
+    # Create a empty list for matching columns
     matches = []
+    # Attempting to find matching columns of csv
     # Take one list and loop through it
     for i in dh:
         # Now loop through the other list - the second list should be shorter
         # @todo: detect which list is the shorter one
         for k in uh:
-            # Compare
-            if k.lower() == i.lower():
+            # Compare titles and strip the text from both sides
+            if k.lower().strip() == i.lower().strip():
                 matches.append(k)
-    print matches
+    line = []
+    # @todo find matching columns and merge
+    for k in d: 
+        for i in matches:
+            line.append(k[i])
+            print line
+            # if i == len(matches):
+            break
