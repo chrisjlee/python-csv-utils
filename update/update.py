@@ -19,7 +19,7 @@ o = csv.writer(o)
 #print
 #exit()
 
-print 'Loading csv data into memory'
+#print 'Loading csv data into memory'
 data = {}
 column_number = 0
 
@@ -34,7 +34,7 @@ for i, line in enumerate(csv.reader(i)):
 	new = line[0:1] + ['TRUE'] + line[2:5] + ['Broder'] + line[6:]
 	data.update({line[0]:new})
 
-print 'Updating data'
+#print 'Updating data'
 for i, line in enumerate(csv.reader(u)):
 	if i == 0:
 		continue
@@ -42,7 +42,7 @@ for i, line in enumerate(csv.reader(u)):
 	sku = line[1]
 
 	# merge prices
-	price = '%s|0|1;%s|2|12;%s|13|-1;' % (line[4].replace('.', ''), line[5].replace('.', ''), line[6].replace('.', ''))
+	price = '%s|0|1;%s|2|12;%s|13|-1' % (line[4], line[5], line[6])
 	image = line[16] + line[17]
 
 	# attempt to find the same sku on csv data	
@@ -55,8 +55,8 @@ for i, line in enumerate(csv.reader(u)):
 		newline = [line[1], 'TRUE', line[2], price, line[15], 'Broder', line[11], line[3], line[19], '','','', line[24], '','', line[1], image, 'NEW']
 		data.update({sku:newline})
 
-print 'Saving data onto disk'
+#print 'Saving data onto disk'
 for line in data:
 	o.writerow(data[line])
 
-print 'done!'
+#print 'done!'
