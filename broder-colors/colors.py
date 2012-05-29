@@ -14,22 +14,13 @@ inf, outf = args.input, args.output
 outf = csv.writer(outf)
 
 print 'Loading %s file into memory' % inf.name
-data = []
-needle = ''
-for i, line in enumerate(csv.reader(inf)):
-    if i == 0:
-        continue
-    needle = line[11]
-    if len(data) == 0:
-        data.append(needle)
-        continue
-    j = 0
-    for j, item in enumerate(data):
-        print item
-        if needle == item:
-            print 'match'
-            continue
-        else:
-            print 'no match: appending item'
-            data.append(item)
-            continue
+data = set()
+results = []
+lines = csv.reader(inf)
+header = lines.next()
+for row in lines:
+    data.add(row[11].upper())
+results = list(data)
+output = ["%s|%s" %(i,i) for i in results]
+for i in output:
+    print i
