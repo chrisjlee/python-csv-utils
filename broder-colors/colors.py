@@ -2,6 +2,7 @@
 import csv
 import sys
 import argparse
+import re
 
 # creates a text file of all the colors in pipe seperated format
 # parsing command line options
@@ -11,7 +12,7 @@ parser.add_argument('-o', '--output', help='Output file', nargs='?', type=argpar
 args = parser.parse_args(sys.argv[1:])
 # Declare variables from input
 inf, outf = args.input, args.output
-outf = csv.writer(outf)
+#outf = csv.writer(outf)
 
 print 'Loading %s file into memory' % inf.name
 data = set()
@@ -19,8 +20,10 @@ results = []
 lines = csv.reader(inf)
 header = lines.next()
 for row in lines:
-    data.add(row[11].upper())
+    if not re.search('[^a-zA-Z\/\\\,\s]', row[5]):
+        data.add(row[5].upper())
+    else: continue
 results = list(data)
 output = ["%s|%s" %(i,i) for i in results]
 for i in output:
-    print i
+    outf.write("%s\n" % i)
