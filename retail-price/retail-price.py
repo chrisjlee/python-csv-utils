@@ -4,6 +4,8 @@ import csv
 import sys
 import argparse
 
+# converts retail price to minor units
+
 # parsing command line options
 parser = argparse.ArgumentParser(prog='desc', description=__doc__)
 parser.add_argument('-i', '--input', help='Input file', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
@@ -23,5 +25,7 @@ for i, line in enumerate(csv.reader(inf)):
     #print line 
     price = "%.2f" % float(line[8])
     tmp = price.replace('.','')
-    nl = line[:8] + [tmp] + line[10:]
+    nl = line[:8] + [tmp] + line[9:]
+    #print nl
+    #break
     outf.writerow(nl)
