@@ -2,3 +2,4 @@ assets/*.py
 .pydevproject
 *update*.csv
 .project
+.~*
